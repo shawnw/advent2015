@@ -5,33 +5,51 @@
 using point = std::pair<int, int>;
 
 int main(void) {
-	int x = 0, y = 0;
-	std::map<point, int> grid;
+	point santa1 = {0,0}, santa2 = {0,0}, robot = {0,0};
+	std::map<point, int> year1, year2;
 	char dir;
+	bool santas_move = true;
 	
-	grid[std::make_pair(0,0)] = 1;
+	year1[santa1] = 1;
+	year2[santa2] = 2;
 	while (std::cin >> dir) {
+		point coord;
+		if (santas_move)
+			coord = santa2;
+		else
+			coord = robot;
 		switch (dir) {
 			case '^':
-				x += 1;
+				santa1.first += 1;
+				coord.first += 1;
 				break;
 			case '>':
-				y += 1;
+				santa1.second += 1;
+				coord.second += 1;
 				break;
 			case '<':
-				y -= 1;
+				santa1.second -= 1;
+				coord.second -= 1;
 				break;
 			case 'V':
 			case 'v':
-				x -= 1;
+				santa1.first -= 1;
+				coord.first -= 1;
 				break;
 			default:
 				std::cerr << "Invalid character '" << dir << "'\n";
 				continue;
 		}
-		grid[std::make_pair(x, y)] += 1;		
+		year1[santa1] += 1;
+		year2[coord] += 1;
+		if (santas_move)
+			santa2 = coord;
+		else
+			robot = coord;
+		santas_move = !santas_move;
 	}
 	
-	std::cout << "Number of houses: " << grid.size() << '\n';
+	std::cout << "Number of houses:\nYear 1: " << year1.size()
+		<< "\nYear 2: " << year2.size() << '\n';
 	return 0;
 }
