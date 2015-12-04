@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <ratio>
 #include "md5.h"
 
 class compare_hash {
@@ -31,6 +33,9 @@ int main(int argc, char ** argv) {
 	
 	std::getline(std::cin, seed);
 	
+	using namespace std::chrono;
+	steady_clock::time_point t1 = steady_clock::now();
+	
 	for (magic = 1; true; magic += 1) {
 		const std::string key = make_secret_key(seed, magic);
 		const std::string hashed_key = md5(key);
@@ -40,6 +45,11 @@ int main(int argc, char ** argv) {
 		} else if (magic % 10000 == 0)
 			std::cout << '.';
 	}
+	
+	steady_clock::time_point t2 = steady_clock::now();
+	
+	seconds time_span = duration_cast<seconds>(t2 - t1);
+	std::cout << "Ran in " << time_span.count() << " seconds.\n";
 	return 0;
 }
 	
