@@ -11,7 +11,7 @@ class compare_hash {
 		std::string prefix;
 	public:
 		explicit compare_hash(int n) : prefix(n, '0') {}
-		bool matches(const std::string hash) {
+		bool matches(const std::string &hash) const {
 			return hash.compare(0, prefix.length(), prefix) == 0;
 		}
 };

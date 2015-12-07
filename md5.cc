@@ -343,9 +343,9 @@ std::string MD5::hexdigest() const
 // lots of hashes in hex format by a factor of 14. 9958000 generated in 18 seconds instead
 // of 250.
   for (int i = 0; i < 16; i++) {
-	  static const char hexdigits[] = "0123456789abcdef";
+	  const char hexdigits[] = "0123456789abcdef";
 	  buf[i*2] = hexdigits[digest[i] >> 4];
-	  buf[(i*2)+1] = hexdigits[digest[i] & 0xF];
+	  buf[(i*2)+1] = hexdigits[digest[i] & 0x0F];
   }
 #else
   for (int i=0; i<16; i++)
@@ -353,7 +353,7 @@ std::string MD5::hexdigest() const
 #endif
   buf[32]=0;
  
-  return std::string(buf);
+  return std::string(buf, 32);
 }
  
 //////////////////////////////
