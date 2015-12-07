@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-using lights = std::vector<std::vector<bool>>;
+using lights = std::vector<std::vector<int>>;
 
 // true if haystart starts with needle
 bool starts_with(const std::string &haystack, const std::string &needle) {
@@ -18,10 +18,12 @@ void set_lights(lights &grid, const std::string &command) {
 	std::istringstream cmd{command};
 				
 	cmd >> turn >> onoff >> x1 >> comma1 >> y1 >> through >> x2 >> comma2 >> y2;
-	bool v = onoff == "on";
+	int delta = onoff == "on" ? 1 : -1;
 	for (int x = x1; x <= x2; x += 1) {
 		for (int y = y1; y <= y2; y += 1) {
-			grid[x][y] = v;
+			grid[x][y] += delta;
+			if (delta == -1 && grid[x][y] < 0)
+				grid[x][y] = 0;
 		}
 	}
 }
@@ -36,13 +38,13 @@ void toggle_lights(lights &grid, const std::string &command) {
 	cmd >> toggle >> x1 >> comma1 >> y1 >> through >> x2 >> comma2 >> y2;
 	for (int x = x1; x <= x2; x += 1) {
 		for (int y = y1; y <= y2; y += 1) {
-			grid[x][y] = !grid[x][y];
+			grid[x][y] += 2;
 		}
 	}
 }
 
 int main(void) {
-	lights grid(1000, std::vector<bool>(1000, false));
+	lights grid(1000, std::vector<int>(1000, 0));
 	std::string command;
 	
 	while (std::getline(std::cin, command)) {
@@ -55,13 +57,12 @@ int main(void) {
 			std::cerr << "Unknown command: " << command << '\n';
 	}
 		
-	int lit = 0;
+	int lumens = 0;
 	for (auto &row : grid) {
-		for (auto light : row) { 
-			if (light)
-				lit += 1;
+		for (auto brightness : row) { 
+			lumens += brightness;
 		}
 	}
-	std::cout << "Number of lit lights: " << lit << '\n';
+	std::cout << "Brightness of lights: " << lumens << '\n';
 	return 0;
 }
