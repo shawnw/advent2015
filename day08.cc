@@ -22,19 +22,34 @@ int logical_length(const std::string &s) {
 	return len;
 }
 
+int encoded_length(const std::string &s) {
+	int len = 2; // For the double quotes
+	
+	for (auto c : s) {
+		if (c == '"' || c == '\\') 
+			len += 2;
+		else
+			len += 1;
+	}
+	return len;
+}
+
 
 int main(void) {
 	std::string line;
 	int total_chars = 0;
 	int logical_chars = 0;
+	int encoded_chars = 0;
 	
 	while (std::getline(std::cin, line)) {
-		int ll;
-		ll = logical_length(line);
+		int el;
 		total_chars += line.length();
-		logical_chars += ll;
-		//std::cout << "Logical length of '" << line << "' is " << ll << '\n';
+		logical_chars += logical_length(line);
+		el = encoded_length(line);
+		encoded_chars += el;
+		//std::cout << "Encoded length of '" << line << "' is " << el << '\n';
 	}
-	std::cout << (total_chars - logical_chars) << '\n';
+	std::cout << "Part 1 length: " << (total_chars - logical_chars) << '\n';
+	std::cout << "Part 2 length: " << (encoded_chars - total_chars) << '\n';
 	return 0;
 }
