@@ -4,6 +4,7 @@
 int logical_length(const std::string &s) {
 	int len = 0;
 	
+	// Start at 1 to skip leading double quote. Same for ending position.
 	for (int i = 1; i < s.length() - 1; ) {
 		if (s[i] == '\\') {
 			i += 1;
@@ -42,12 +43,9 @@ int main(void) {
 	int encoded_chars = 0;
 	
 	while (std::getline(std::cin, line)) {
-		int el;
 		total_chars += line.length();
 		logical_chars += logical_length(line);
-		el = encoded_length(line);
-		encoded_chars += el;
-		//std::cout << "Encoded length of '" << line << "' is " << el << '\n';
+		encoded_chars += encoded_length(line);
 	}
 	std::cout << "Part 1 length: " << (total_chars - logical_chars) << '\n';
 	std::cout << "Part 2 length: " << (encoded_chars - total_chars) << '\n';
