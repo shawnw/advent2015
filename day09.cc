@@ -3,48 +3,59 @@
 #include <regex>
 #include <vector>
 #include <utility>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/dijkstra_shortest_paths.hpp>
-#include <boost/property_map/property_map.hpp>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <climits>
+#include <iterator>
 
-using namespace boost;
+using conn = std::map<std::pair<std::string, std::string>, int>;
 
-using edge = std::pair<std::string, std::string>
-using graph = adjancency_list<vecS, vecS, directedS, no_property, property<edge_weight_t, int>>;
-using vertex_descriptor = graph_traits<graph>::vertex_descriptor;
+int shortest_route(conn &connections, const std::vector<std::string> &cities, std::string current) {
+	int distance = 0;
+	for (const auto &city : cities) {
+		auto route = std::make_pair(current ,city);
+		if (connections.find(route) == connections.end()) 
+			return INT_MAX;
+		distance += connections[route];
+		current = city;
+	}
+	return distance;
+}
 
 int main(void) {
 	std::string line;
-	std::vector<edge> edge_array;
-	std::vector<int> distances;
-	std::regex edge_re { R"(\w+) to (\w+) = (\d+)" };
+	std::regex edge_re { "(\\w+) to (\\w+) = (\\d+)" };
+	std::set<std::string> cities;
+	conn connections;
+	int min_distance = INT_MAX;
 	
 	while (std::getline(std::cin, line)) {
 		std::smatch fields;
-		if (std::regex_match(line, fields, edge_re) {
-			edge_array.emplace_back(fields[1], fields[2]);
-			distances.push_back(fields[3]);
+		if (std::regex_match(line, fields, edge_re)) {
+			cities.insert(fields[1]);
+			cities.insert(fields[2]);
+			int d = stoi(fields[3]);
+			connections.emplace(std::make_pair(fields[1], fields[2]), d);
+			connections.emplace(std::make_pair(fields[2], fields[1]), d);
 		} else {
 			std::cerr << "Unknown line '" << line << "'\n";
 		}	
 	}
 	
-	graph g(edge_array.begin(), edge_array.end(), weights, edge_array.length());
-	property_map<graph, edge_weight_t>::type weighttype = get(edge_weight, t);
-	std::vector<vertex_descriptor> p(num_vertices(g));
-	std::vector<int> d(num_vertices(g));
-	vertex_descriptor s = vertex(,g);
-	
-	dijkstra_shortest_paths(g, s,
-                          predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, g))).
-                          distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, g))));
-
-	std::cout << "distances and parents:" << std::endl;
-	graph_traits < graph_t >::vertex_iterator vi, vend;
-	for (std::tie(vi, vend) = vertices(g); vi != vend; ++vi) {
-		std::cout << "distance(" << name[*vi] << ") = " << d[*vi] << ", ";
-		std::cout << "parent(" << name[*vi] << ") = " << name[p[*vi]] << std::endl;
+	for (const auto city : cities) {
+		std::vector<std::string> remaining{cities.begin(), cities.end()};
+		remaining.erase(std::lower_bound(remaining.begin(), remaining.end(), city));
+		do {
+			int d = shortest_route(connections, remaining, city);
+			//std::cout << city << " -> ";
+			//std::copy(remaining.begin(), remaining.end(), std::ostream_iterator<std::string>(std::cout, " -> "));
+			//std::cout << " = " << d << '\n';
+			min_distance = std::min(min_distance, d);
+		} while (std::next_permutation(remaining.begin(), remaining.end()));			
 	}
-	std::cout << std::endl;
+	
+	std::cout << "Minimum distance: " << min_distance << '\n';
+	
 	return 0;
 }
