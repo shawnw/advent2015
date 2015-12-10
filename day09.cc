@@ -11,12 +11,14 @@
 
 using conn = std::map<std::pair<std::string, std::string>, int>;
 
-int shortest_route(conn &connections, const std::vector<std::string> &cities, std::string current) {
+struct no_such_route {};
+
+int route_length(conn &connections, const std::vector<std::string> &cities, std::string current) {
 	int distance = 0;
 	for (const auto &city : cities) {
 		auto route = std::make_pair(current ,city);
 		if (connections.find(route) == connections.end()) 
-			return INT_MAX;
+			throw no_such_route();
 		distance += connections[route];
 		current = city;
 	}
@@ -29,6 +31,7 @@ int main(void) {
 	std::set<std::string> cities;
 	conn connections;
 	int min_distance = INT_MAX;
+	int max_distance = 0;
 	
 	while (std::getline(std::cin, line)) {
 		std::smatch fields;
@@ -47,15 +50,20 @@ int main(void) {
 		std::vector<std::string> remaining{cities.begin(), cities.end()};
 		remaining.erase(std::lower_bound(remaining.begin(), remaining.end(), city));
 		do {
-			int d = shortest_route(connections, remaining, city);
-			//std::cout << city << " -> ";
-			//std::copy(remaining.begin(), remaining.end(), std::ostream_iterator<std::string>(std::cout, " -> "));
-			//std::cout << " = " << d << '\n';
-			min_distance = std::min(min_distance, d);
+			try {
+				int d = route_length(connections, remaining, city);
+				min_distance = std::min(min_distance, d);
+				max_distance = std::max(max_distance, d);
+				//std::cout << city << " -> ";
+				//std::copy(remaining.begin(), remaining.end(), std::ostream_iterator<std::string>(std::cout, " -> "));
+				//std::cout << " = " << d << '\n';
+			} catch (no_such_route e) {
+			}
 		} while (std::next_permutation(remaining.begin(), remaining.end()));			
 	}
 	
 	std::cout << "Minimum distance: " << min_distance << '\n';
+	std::cout << "Maximum distance: " << max_distance << '\n';
 	
 	return 0;
 }
