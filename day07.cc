@@ -17,7 +17,7 @@ inline bool isnumber(const std::string &n) {
 	return std::all_of(n.begin(), n.end(), ::isdigit);
 }
 
-OPS stoop(const std::string &s) {
+OPS stoop(const std::string &s)  {
 	if (s == "AND")
 		return OP_AND;
 	else if (s == "OR")

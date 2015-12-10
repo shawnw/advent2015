@@ -16,11 +16,12 @@ struct no_such_route {};
 int route_length(conn &connections, const std::vector<std::string> &cities) {
 	int distance = 0;
 	auto current = cities.front();
-	for (auto city = cities.begin() + 1; city != cities.end(); city++) {
+	for (auto city = cities.begin() + 1; city != cities.end(); ++city) {
 		const auto route = std::make_pair(current, *city);
-		if (connections.find(route) == connections.end()) 
+		auto r = connections.find(route);
+		if (r == connections.end()) 
 			throw no_such_route();
-		distance += connections[route];
+		distance += r->second;
 		current = *city;
 	}
 	return distance;
@@ -53,8 +54,8 @@ int main(void) {
 			int d = route_length(connections, cities);
 			min_distance = std::min(min_distance, d);
 			max_distance = std::max(max_distance, d);
-			std::copy(cities.begin(), cities.end(), std::ostream_iterator<std::string>(std::cout, " -> "));
-			std::cout << " = " << d << '\n';
+			//std::copy(cities.begin(), cities.end(), std::ostream_iterator<std::string>(std::cout, " -> "));
+			//std::cout << " = " << d << '\n';
 		} catch (no_such_route e) {
 		}
 	} while (std::next_permutation(cities.begin(), cities.end()));			
