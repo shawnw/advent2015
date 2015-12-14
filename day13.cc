@@ -5,15 +5,22 @@
 #include <utility>
 #include <map>
 #include <algorithm>
+#include <functional>
 
-using happy = std::pair<std::string, int>;
-using happymap = std::map<std::string, std::vector<happy>>;
+using happyscore = std::pair<const std::string, int>;
+using happylist = std::vector<happyscore>;
+using happymap = std::map<std::string, happylist>;
+
+bool cmp_happy(const happyscore &h, const std::string &s) {
+	return h.first == s;
+}
 
 int happiness_for(happymap &h, const std::string &person1, const std::string &person2) {
-	const std::vector<happy> &h1 = h[person1];
-	const std::vector<happy> &h2 = h[person2];
-	auto m1 = std::find_if(h1.begin(), h1.end(), [&person2](const happy &m){ return m.first == person2; });
-	auto m2 = std::find_if(h2.begin(), h2.end(), [&person1](const happy &m){ return m.first == person1; });
+	const happylist &h1 = h[person1];
+	const happylist &h2 = h[person2];
+	using namespace std::placeholders;
+	auto m1 = std::find_if(h1.begin(), h1.end(), std::bind(cmp_happy, _1, person2));
+	auto m2 = std::find_if(h2.begin(), h2.end(), std::bind(cmp_happy, _1, person1));
 	return m1->second + m2->second;
 }
 
@@ -42,7 +49,7 @@ int main(void) {
 
 	// For part 2.
 	if (1) {
-		for (auto &person : people) {
+		for (const auto &person : people) {
 			h["yourself"].emplace_back(person, 0);
 			h[person].emplace_back("yourself", 0);
 		}
