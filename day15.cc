@@ -8,8 +8,7 @@
 	
 using ingquals = std::vector<std::valarray<int>>;
 	
-template<typename V1, typename V2>
-int score(V1 &ivec, V2 &qvec) {
+int score(const ingquals &ivec, const std::vector<int> &qvec) {
 	ingquals t(ivec.size());
 	std::valarray<int> sum{0,0,0,0};	
 	std::transform(ivec.begin(), ivec.end(), qvec.begin(), t.begin(),
