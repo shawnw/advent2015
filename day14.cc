@@ -3,7 +3,7 @@
 #include <regex>
 #include <map>
 #include <algorithm>
-#include <list>
+#include <forward_list>
 
 class reindeer {
 	private:
@@ -17,7 +17,7 @@ class reindeer {
 	public:
 		int distance;
 		int points;
-		explicit reindeer() {}
+		reindeer() {}
 		reindeer(int _s, int _run, int _rest) : speed(_s), runtime(_run), resttime(_rest),
 			distance(0), doing(RUN), doingtime(0), points(0) {}
 		void advance(void);
@@ -53,15 +53,15 @@ int main(void) {
 	for (int s = 0; s < 2503; s++) {
 		for (auto &d : deer)
 			d.second.advance();
-		std::list<std::string> leaders;
+		std::forward_list<std::string> leaders;
 		int leading_distance = 0;
 		for (auto &d : deer) {
 			if (d.second.distance > leading_distance) {
 				leaders.clear();
-				leaders.push_back(d.first);
+				leaders.push_front(d.first);
 				leading_distance = d.second.distance;
 			} else if (d.second.distance == leading_distance) {
-				leaders.push_back(d.first);
+				leaders.push_front(d.first);
 			}
 		}
 		for (auto &name : leaders)
