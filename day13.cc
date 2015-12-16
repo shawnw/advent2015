@@ -24,11 +24,13 @@ int happiness_for(happymap &h, const std::string &person1, const std::string &pe
 	return m1->second + m2->second;
 }
 
-int main(void) {
+int main(int argc, char **argv) {
 	std::string line;
 	std::regex person_re{R"((\w+) would (gain|lose) (\d+) happiness units by sitting next to (\w+)\.)" };
 	std::vector<std::string> people;
 	happymap h;
+	
+	bool yourself = argc == 2;
 	
 	while (std::getline(std::cin, line)) {
 		std::smatch fields;
@@ -48,7 +50,7 @@ int main(void) {
 	people.erase(std::unique(people.begin(), people.end()), people.end());
 
 	// For part 2.
-	if (1) {
+	if (yourself) {
 		for (const auto &person : people) {
 			h["yourself"].emplace_back(person, 0);
 			h[person].emplace_back("yourself", 0);
