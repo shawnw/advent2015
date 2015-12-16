@@ -1,16 +1,14 @@
 #include <iostream>
 #include <string>
-#include <map>
-#include <vector>
+#include <unordered_map>
 #include <regex>
 
-using things = std::map<std::string, int>;
+using things = std::unordered_map<std::string, int>;
 
 bool agrees(bool part2, const things &sue, const std::pair<std::string, int> &item) {
 	auto si = sue.find(item.first);
 	if (si == sue.end())
 		return true;
-    // else if clauses for Part 2
 	else if (part2 && (item.first == "cats" || item.first == "trees"))
 		return si->second > item.second;
 	else if (part2 && (item.first == "pomeranians" || item.first == "goldfish"))
@@ -34,7 +32,6 @@ int main(int argc, char **argv) {
 	std::string line;
 	std::regex pair_re{ R"((\w+): (\d+))" };
 	int nsue = 1;
-	std::vector<std::pair<int, things>> possibles;
 	bool part2 = argc == 2;
 	
 	while (std::getline(std::cin, line)) {
@@ -47,12 +44,8 @@ int main(int argc, char **argv) {
 			sue.emplace(thing, count);
 		}
 		if (possible_sue(part2, traces, sue))
-			possibles.push_back(std::make_pair(nsue, sue));
+			std::cout << "Sue " << nsue << " is a match.\n";
 		nsue += 1;
-	}
-		
-	for (auto &sue : possibles)
-		std::cout << "Sue " << sue.first << " is a match.\n";
-	
+	}	
 	return 0;
 }
