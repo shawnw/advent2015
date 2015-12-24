@@ -4,16 +4,17 @@
 #include <regex>
 #include <vector>
 #include <valarray>
-#include <numeric>
+#include <numeric>	
 	
 using ingquals = std::vector<std::valarray<int>>;
+
+int mmax(int a, int b) { return std::max(a,b); }
 	
-int score(const ingquals &ivec, const std::vector<int> &qvec) {
-	ingquals t(ivec.size());
+int score(ingquals ivec, const std::vector<int> &qvec) {
 	std::valarray<int> sum{0,0,0,0};	
-	std::transform(ivec.begin(), ivec.end(), qvec.begin(), t.begin(),
+	std::transform(ivec.begin(), ivec.end(), qvec.begin(), ivec.begin(),
 		[](auto &i, int a){ return i * a; });
-	sum = std::accumulate(t.begin(), t.end(), sum);
+	sum = std::accumulate(ivec.begin(), ivec.end(), sum);
 	sum = sum.apply([](int i){ return std::max(i, 0); });
 	return std::accumulate(std::begin(sum), std::end(sum), 1, std::multiplies<int>());
 }
@@ -26,7 +27,7 @@ void populate_quantities(std::vector<std::vector<int>> &q, int count, std::vecto
 	if (count == 1) {
 		int s = 100 - tottsps(scratch);
 		scratch.push_back(s);
-		q.push_back(scratch);
+		q.emplace_back(scratch);
 	} else {
 		scratch.push_back(0);
 		for (int n = 0; n <= 100; n++) {
