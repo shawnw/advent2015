@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 #include <vector>
 #include <algorithm>
 
@@ -39,18 +38,20 @@ void apply_effects(fighter &you, fighter &boss) {
 
 // One round.
 result fight(fighter &you, fighter &boss, int spell, int &cost) {
+  // Player turn
 	if (hard) {
 		you.hp -= 1;
 		if (you.hp <= 0)
 			return BOSS;
 	}
+
 	apply_effects(you, boss);
 	if (boss.hp <= 0)
 		return YOU;
+
 	if (you.mana < spellcosts[spell]) {
 		return BOSS;
 	}
-
 	you.mana -= spellcosts[spell];
 	cost += spellcosts[spell];
 	switch (spell) {
@@ -75,17 +76,19 @@ result fight(fighter &you, fighter &boss, int spell, int &cost) {
 	if (boss.hp <= 0)
 		return YOU;
 	
+	// Boss turn
 	apply_effects(you, boss);
 	if (boss.hp <= 0)
 		return YOU;
-	you.hp -= std::max(1, boss.damage - you.armor);
+
+	 you.hp -= std::max(1, boss.damage - you.armor);
 	if (you.hp <= 0)
 		return BOSS;
 
 	return NEITHER;
 }
 
-void play(fighter you, fighter boss, int mana, intvec &mana_win) {
+void play(fighter you, fighter boss, int mana, int &mana_win) {
 	for (int s = 0; s < 5; s += 1) {
 		if (s == 2 && you.shield_count > 1) {
 			continue;
@@ -98,10 +101,11 @@ void play(fighter you, fighter boss, int mana, intvec &mana_win) {
 			int savedmana = mana;
 			result r = fight(you, boss, s, mana);
 			if (r == YOU) {
-				mana_win.push_back(mana);
-			} else if (r == BOSS) {
+				if (mana < mana_win)
+					mana_win = mana;
 			} else if (r == NEITHER) {
-				play(you, boss, mana, mana_win);
+				if (mana < mana_win)
+					play(you, boss, mana, mana_win);
 			}
 			you = savedyou; boss = savedboss; mana = savedmana;
 		}
@@ -111,14 +115,9 @@ void play(fighter you, fighter boss, int mana, intvec &mana_win) {
 int main(int argc, char **argv) {
 	// Probably should read the boss's stats from stdin, but...
 	fighter you = {50, 0, 0, 500, 0, 0, 0}, boss = {58,0,9,0,0,0,0};
-	intvec mana_win;
+	int mana_win = 500000;
 	hard = argc == 2;
 	play(you, boss, 0, mana_win);
-	auto m = std::min_element(mana_win.begin(), mana_win.end());
-	if (m != mana_win.end()) 
-		std::cout << "Minimum mana expenditure: " << *m << '\n';
-	else
-		std::cout << "No winner!\n";
-	
+	std::cout << "Minimum mana expenditure: " << mana_win << '\n';
 	return 0;
 }
