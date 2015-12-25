@@ -8,12 +8,14 @@ bool presents(unsigned house, unsigned total) {
 	for (unsigned elf = 2; elf < limit; elf += 1) {
 		unsigned div = house / elf;
 		unsigned rem = house % elf;
-		if ((house % elf) == 0) {
+		if (rem == 0) {
 			s += (elf * 10) + (div * 10);
 			if (s >= total)
 				return true;
 		}
 	}
+	if (limit * limit == house)
+		s += limit * 10;
 	
 	return s >= total;
 }
@@ -29,10 +31,15 @@ bool presents2(unsigned house, unsigned total) {
 					s += elf * 11;
 				else if (elf <= 50)
 					s += div * 11;
+				if (div > 50 && elf > 50)
+					break;
 				if (s >= total)
 					return true;
 			}
 	}
+	if (limit * limit == house)
+		s += limit * 11;
+	
 	return s >= total;
 }
 
