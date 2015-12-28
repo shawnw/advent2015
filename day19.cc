@@ -1,3 +1,10 @@
+/* For part 2, this one returns the first deriviation it finds for reducing the
+* test string to e. Since it tries to reduce longest matches first, I think this
+* will always be correct. An exhaustive search to confirm it takes more time
+* than I have patience.
+* Anyways, the answer it gave was right.
+*/
+
 // g++ -O -std=c++14 -o day19 day19.cc
 #include <iostream>
 #include <sstream>
@@ -25,12 +32,10 @@ int reduce(const std::string &molecule, smap &trans, const svec &tokens, int ste
 
 	auto i = trans.find(molecule);
 	if (i != trans.end() && i->second == "e") {
-	//	std::cout << "Successful reduction.\n";
 		return steps + 1;
 	}
 
 	if (steps >= min_steps) {
-	//	std::cout << "Terminating search path.\n";
 		return -1;
 	}
 	
@@ -38,9 +43,7 @@ int reduce(const std::string &molecule, smap &trans, const svec &tokens, int ste
 		size_t p, from = 0;
 		while ((p = molecule.find(t, from)) != std::string::npos) {
 				std::string nm = molecule;
-	//			std::cout << "Replacing " << t << " with " << trans[t] << '\n';
 				nm.replace(p, t.length(), trans[t]);
-	//			std::cout << molecule << " -> " << nm << '\n';
 				int s = reduce(nm, trans, tokens, steps + 1);
 				if (s > 0) {
 					return s;
