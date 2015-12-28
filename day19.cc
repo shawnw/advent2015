@@ -1,3 +1,4 @@
+// g++ -O -std=c++14 -o day19 day19.cc
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -7,6 +8,8 @@
 #include <functional>
 #include <set>
 #include <iterator>
+#include <cctype>
+#include <climits>
 
 using smap = std::map<std::string, std::string>;
 using svec = std::vector<std::string>;
@@ -18,28 +21,38 @@ std::string atoms_to_str(const svec &atoms) {
 }
 
 int reduce(const std::string &molecule, smap &trans, const svec &tokens, int steps = 0) {
+  static int min_steps = INT_MAX;
+
 	auto i = trans.find(molecule);
-	if (i != trans.end() && i->second == "e")
-		return steps;
+	if (i != trans.end() && i->second == "e") {
+	//	std::cout << "Successful reduction.\n";
+		return steps + 1;
+	}
+
+	if (steps >= min_steps) {
+	//	std::cout << "Terminating search path.\n";
+		return -1;
+	}
 	
-	std::vector<int> paths;
 	for (auto &t : tokens) {
-		std::string::size_type from = std::string::npos, p;
-		while ((p = molecule.rfind(t, from)) != std::string::npos) {
+		size_t p, from = 0;
+		while ((p = molecule.find(t, from)) != std::string::npos) {
 				std::string nm = molecule;
+	//			std::cout << "Replacing " << t << " with " << trans[t] << '\n';
 				nm.replace(p, t.length(), trans[t]);
+	//			std::cout << molecule << " -> " << nm << '\n';
 				int s = reduce(nm, trans, tokens, steps + 1);
-				if (s > 0)
-					paths.push_back(s);
-				if (p == 0)
-					break;
-				from = p - 1;
+				if (s > 0) {
+					return s;
+					min_steps = std::min(min_steps, s);
+				}
+				from = p + 1;
 			}
 	}
-	if (paths.empty())
+	if (min_steps == INT_MAX)
 		return -1;
 	else
-		return *std::min_element(paths.begin(), paths.end());
+		return min_steps;
 }
 
 int main(void) {
@@ -83,7 +96,8 @@ int main(void) {
 	smap rtrans;
 	svec rhs;
 	for (auto &t : transformations) {
-		rhs.push_back(t.second);
+		if (t.first != "e")
+			rhs.push_back(t.second);
 		rtrans.insert(std::make_pair(t.second, t.first));
 	}
 	std::sort(rhs.begin(), rhs.end(),
