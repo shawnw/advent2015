@@ -20,7 +20,7 @@ std::string make_secret_key(const std::string &seed, int n) {
 	return seed + std::to_string(n);
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
 	std::string seed;
 	int magic;
 	
@@ -31,21 +31,19 @@ int main(int argc, char ** argv) {
 	
 	compare_hash test(std::stoi(argv[1]));
 	
-	std::getline(std::cin, seed);
+	//std::getline(std::cin, seed);
+	seed = "iwrupvqb";
 	
 	using namespace std::chrono;
 	steady_clock::time_point t1 = steady_clock::now();
-	
 	for (magic = 1; true; magic += 1) {
 		const std::string key = make_secret_key(seed, magic);
 		const std::string hashed_key = md5(key);
 		if (test.matches(hashed_key)) {
 			std::cout << '\n' << magic << '\n';
 			break;
-		} else if (magic % 10000 == 0)
-			std::cout << '.';
+		} 
 	}
-	
 	steady_clock::time_point t2 = steady_clock::now();
 	
 	seconds time_span = duration_cast<seconds>(t2 - t1);

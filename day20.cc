@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <chrono>
 
 bool presents(unsigned house, unsigned total) {
 	unsigned s = (house * 10) + 10;
@@ -46,13 +47,22 @@ bool presents2(unsigned house, unsigned total) {
 int main(void) {
 	unsigned magic = 34000000;
 	unsigned n = 1;
+
+	using namespace std::chrono;
+	auto t1 = steady_clock::now();
 	while (1) {
 		if (presents(n, magic))
 			break;
 		n += 1;
 	}
 	std::cout << "Part 1: House " << n << " gets the loot.\n";
-
+	auto t2 = steady_clock::now();
+	
+	auto time_span = duration_cast<milliseconds>(t2 - t1);
+	std::cout << "Ran in " << time_span.count() << " seconds.\n";
+	
+	
+	t1 = steady_clock::now();
 	n = 1;
 	while (1) {
 	if (presents2(n, magic))
@@ -60,6 +70,10 @@ int main(void) {
 		n += 1;
 	}
 	std::cout << "Part 2: House " << n << " gets the loot.\n";
-
+	t2 = steady_clock::now();
+	
+	time_span = duration_cast<milliseconds>(t2 - t1);
+	std::cout << "Ran in " << time_span.count() << " seconds.\n";
+	
 	return 0;
 }
