@@ -5,16 +5,22 @@
 // This would be trivial with perl.
 
 bool valid_password(const std::string &p) {
-	static std::regex repeated_pairs{ R"(([a-z])\1.*(?!\1\1)([a-z])\2)" };
-	if (!std::regex_search(p, repeated_pairs)) 
-		return false;
+  if (p.find_first_of("ilo") != std::string::npos)
+    return false;
 
-	const char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
-	for (size_t i = 0; i < 24; i++) {
-		if (p.find(alphabet + i, 0, 3) != std::string::npos)
-			return p.find_first_of("ilo") == std::string::npos;
+	static std::regex repeated_pairs{ R"(([a-z])\1.*(?!\1\1)([a-z])\2)" };
+	const char alphabet1[] = "abcdefgh";
+	const char alphabet2[] = "pqrstuvwxyz";
+
+	for (size_t i = 0; i < 6; i++) {
+		if (p.find(alphabet1 + i, 0, 3) != std::string::npos)
+		  return std::regex_search(p, repeated_pairs);
 	}
-	
+	for (size_t i = 0; i < 9; i++) {
+	  if (p.find(alphabet2 + i, 0, 3) != std::string::npos)
+	    return std::regex_search(p, repeated_pairs);
+	}
+
 	return false;
 }
 
@@ -57,8 +63,8 @@ int main(void) {
 		std::cout << p << ": " << valid_password(p) << '\n';
 	
 	std::cout << "\nIncremented password tests:\n";
-	std::string test_next[] = {"abcdefgh", "ghijklmn"
-		/* Add yours here */, "cqjxjnds"};
+	std::string test_next[] = {//"abcdefgh", "ghijklmn",
+		/* Add yours here */ "cqjxjnds"};
 	for (auto p : test_next) {
 		std::string np1 = next_password(p);
 		std::string np2 = next_password(np1);
