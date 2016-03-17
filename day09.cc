@@ -4,7 +4,6 @@
 #include <vector>
 #include <utility>
 #include <map>
-#include <set>
 #include <algorithm>
 #include <climits>
 #include <iterator>
@@ -13,12 +12,12 @@ using conn = std::map<std::pair<std::string, std::string>, int>;
 
 struct no_such_route {};
 
-int route_length(conn &connections, const std::vector<std::string> &cities) {
+int route_length(const conn &connections, const std::vector<std::string> &cities) {
 	int distance = 0;
 	auto current = cities.front();
 	for (auto city = cities.begin() + 1; city != cities.end(); ++city) {
 		const auto route = std::make_pair(current, *city);
-		auto r = connections.find(route);
+		const auto r = connections.find(route);
 		if (r == connections.end()) 
 			throw no_such_route();
 		distance += r->second;
@@ -30,7 +29,7 @@ int route_length(conn &connections, const std::vector<std::string> &cities) {
 int main(void) {
 	std::string line;
 	std::regex edge_re { "(\\w+) to (\\w+) = (\\d+)" };
-	std::set<std::string> allcities;
+	std::vector<std::string> cities;
 	conn connections;
 	int min_distance = INT_MAX;
 	int max_distance = 0;
@@ -38,8 +37,8 @@ int main(void) {
 	while (std::getline(std::cin, line)) {
 		std::smatch fields;
 		if (std::regex_match(line, fields, edge_re)) {
-			allcities.insert(fields[1]);
-			allcities.insert(fields[2]);
+		  cities.push_back(fields[1]);
+		  cities.push_back(fields[2]);
 			int d = stoi(fields[3]);
 			connections.emplace(std::make_pair(fields[1], fields[2]), d);
 			connections.emplace(std::make_pair(fields[2], fields[1]), d);
@@ -47,8 +46,10 @@ int main(void) {
 			std::cerr << "Unknown line '" << line << "'\n";
 		}	
 	}
-	
-	std::vector<std::string> cities{allcities.begin(), allcities.end()};
+
+	std::sort(cities.begin(), cities.end());
+	cities.erase(std::unique(cities.begin(), cities.end()), cities.end());
+
 	do {
 		try {
 			int d = route_length(connections, cities);
