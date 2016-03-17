@@ -1,4 +1,4 @@
-// Compile with: g++ -O -std=c++11 -o day07 day07.cc
+// Compile with: g++ -O -std=c++14 -o day07 day07.cc
 // Run as: ./day07 < day07.txt
 #include <iostream>
 #include <map>
@@ -81,7 +81,7 @@ std::uint16_t logic::output_of(const std::string &num_or_wire) {
 std::uint16_t logic::find_output(const std::string &wire) {
 	gate &g = circuit[wire];
 	
-	if (1 && g.memoized) {
+	if (g.memoized) {
 		return g.val;
 	} else {
 		std::uint16_t r = 0;
@@ -115,21 +115,18 @@ std::uint16_t logic::find_output(const std::string &wire) {
 }
 
 int logic::count_memoized(void) {
-	int m = 0;
-	for (const auto &wires : circuit) 
-		if (wires.second.memoized)
-			m += 1;
-	return m;
+  return std::count_if(circuit.begin(), circuit.end(),
+    [](const auto &wire){ return wire.second.memoized; });
 }
 
 void logic::dump_outputs(void) {
-	for (auto &wires : circuit)
-		std::cout << wires.first << ": " << find_output(wires.first) << '\n';
+	for (auto &wire : circuit)
+		std::cout << wire.first << ": " << find_output(wire.first) << '\n';
 }
 
 void logic::dump_ops(void) {
-	for (const auto &wires : circuit) 
-		std::cout << wires.second << " -> " << wires.first << '\n';
+	for (const auto &wire : circuit) 
+		std::cout << wire.second << " -> " << wire.first << '\n';
 }
 
 void logic::reset(void) {
@@ -169,7 +166,7 @@ int main(void) {
 	
 	std::cout << "There are a total of " << circuit.size() << " wires.\n";
 	
-	std::uint16_t a = circuit.find_output("a");
+	auto a = circuit.find_output("a");
 	std::cout << "Initial value of a: " << a << '\n';
 	
 	std::cout << "Used " << circuit.count_memoized() << " wires.\n";
