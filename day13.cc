@@ -3,13 +3,13 @@
 #include <regex>
 #include <vector>
 #include <utility>
-#include <map>
+#include <unordered_map>
 #include <algorithm>
 #include <functional>
 
 using happyscore = std::pair<const std::string, int>;
 using happylist = std::vector<happyscore>;
-using happymap = std::map<std::string, happylist>;
+using happymap = std::unordered_map<std::string, happylist>;
 
 bool cmp_happy(const happyscore &h, const std::string &s) {
 	return h.first == s;
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 	int max_happiness = 0;
 	do {
 		int happiness = happiness_for(h, people.front(), people.back());
-		for (int i = 0; i < people.size() - 1; i++)
+		for (size_t i = 0; i < people.size() - 1; i++)
 			happiness += happiness_for(h, people[i], people[i+1]);
 		max_happiness = std::max(max_happiness, happiness);
 	} while (std::next_permutation(people.begin(), people.end()));
