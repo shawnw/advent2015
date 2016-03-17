@@ -2,7 +2,7 @@
 #include <cmath>
 #include <chrono>
 
-bool presents(unsigned house, unsigned total) {
+unsigned presents(unsigned house, unsigned total) {
 	unsigned s = (house * 10) + 10;
 	unsigned limit = std::sqrt(house);
 	
@@ -51,15 +51,15 @@ int main(void) {
 	using namespace std::chrono;
 	auto t1 = steady_clock::now();
 	while (1) {
-		if (presents(n, magic))
-			break;
-		n += 1;
+	  if (presents(n, magic))
+	    break;
+	  n += 1;
 	}
 	std::cout << "Part 1: House " << n << " gets the loot.\n";
 	auto t2 = steady_clock::now();
 	
 	auto time_span = duration_cast<milliseconds>(t2 - t1);
-	std::cout << "Ran in " << time_span.count() << " seconds.\n";
+	std::cout << "Ran in " << time_span.count() << " milliseconds.\n";
 	
 	
 	t1 = steady_clock::now();
@@ -73,7 +73,7 @@ int main(void) {
 	t2 = steady_clock::now();
 	
 	time_span = duration_cast<milliseconds>(t2 - t1);
-	std::cout << "Ran in " << time_span.count() << " seconds.\n";
+	std::cout << "Ran in " << time_span.count() << " milliseconds.\n";
 	
 	return 0;
 }
