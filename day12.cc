@@ -1,43 +1,57 @@
 #include <iostream>
 #include <string>
+#include <tuple>
 #include "json.hpp"
 
 using nlohmann::json;
 
-int sum_json(json j) {
-	if (j.is_number())
-		return j.get<int>();
-	else if (j.is_string())
-		return 0;
-	else if (j.is_array()) {
-		int sum = 0;
-		for (auto element : j)
-			sum += sum_json(element);
-		return sum;
-	} else if (j.is_object()) {
-		int sum = 0;
-		for (auto it = j.begin(); it != j.end(); ++it) {
-			if (it.value() == "red")
-				return 0;
-			else 
-				sum += sum_json(it.value());
+std::tuple<int, int> sum_json(json j) {
+	if (j.is_number()) {
+	  int n = j.get<int>();
+		return std::make_tuple(n, n);
+	} else if (j.is_string()) {
+		return std::make_tuple(0, 0);
+	} else if (j.is_array()) {
+		int sum1 = 0, sum2 = 0;
+		for (auto element : j) {
+		  auto t = sum_json(element);
+		  sum1 += std::get<0>(t);
+		  sum2 += std::get<1>(t);
 		}
-		return sum;
+		return std::make_tuple(sum1, sum2);
+	} else if (j.is_object()) {
+		int sum1 = 0, sum2 = 0;
+		bool red = false;
+		for (auto it = j.begin(); it != j.end(); ++it) {
+		  if (it.value() == "red") {
+		    red = true;
+		    sum2 = 0;
+		  }
+		  auto t = sum_json(it.value());
+		  sum1 += std::get<0>(t);
+		  if (!red)
+		    sum2 += std::get<1>(t);
+		}
+		return std::make_tuple(sum1, sum2);
 	} else {
 		// Unhandled type
-		return 0;
+		return std::make_tuple(0, 0);
 	}
 }
 
 int main(void) {
 	std::string line;
-	int sum = 0;	
+	int sum1 = 0, sum2 = 0;	
 	json j;
 	
 	std::cin >> j;
-	for (auto element : j)
-		sum += sum_json(element);	
+	for (auto element : j) {
+		auto t = sum_json(element);
+		sum1 += std::get<0>(t);
+		sum2 += std::get<1>(t);
+	}
+	std::cout << "Total sum, day 1: " << sum1 << '\n';
+	std::cout << "Total sum, day 2: " << sum2 << '\n';
 	
-	std::cout << "Total sum: " << sum << '\n';
 	return 0;
 }
