@@ -5,7 +5,7 @@ int logical_length(const std::string &s) {
 	int len = 0;
 	
 	// Start at 1 to skip leading double quote. Same for ending position.
-	for (int i = 1; i < s.length() - 1; ) {
+	for (std::string::size_type i = 1; i < s.length() - 1; ) {
 		if (s[i] == '\\') {
 			i += 1;
 			if (s[i] == 'x') {
