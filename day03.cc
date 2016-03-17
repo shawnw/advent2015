@@ -13,11 +13,7 @@ int main(void) {
 	year1[santa1] = 1;
 	year2[santa2] = 2;
 	while (std::cin >> dir) {
-		point coord;
-		if (santas_move)
-			coord = santa2;
-		else
-			coord = robot;
+	  point &coord = santas_move ? santa2 : robot;
 		switch (dir) {
 			case '^':
 				santa1.first += 1;
@@ -42,10 +38,6 @@ int main(void) {
 		}
 		year1[santa1] += 1;
 		year2[coord] += 1;
-		if (santas_move)
-			santa2 = coord;
-		else
-			robot = coord;
 		santas_move = !santas_move;
 	}
 	
