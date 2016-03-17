@@ -2,18 +2,28 @@
 #include <algorithm>
 #include <array>
 
+// 3 element sorting network
+void sort3(std::array<int, 3> &a) {
+  if (a[0] > a[1])
+    std::swap(a[0], a[1]);
+  if (a[0] > a[2])
+    std::swap(a[0], a[2]);
+  if (a[1] > a[2])
+    std::swap(a[1], a[2]);
+}
+
 int paper(int l, int w, int h) {
 	int surface_area = 2*l*w + 2*w*h + 2*h*l;
 	
 	std::array<int,3> sides = {l, w, h};
-	std::sort(sides.begin(), sides.end());
+	sort3(sides);
 	
 	return surface_area + sides[0]*sides[1];
 }
 
 int ribbon(int l, int w, int h) {
 	std::array<int, 3> sides = {l, w, h};
-	std::sort(sides.begin(), sides.end());
+	sort3(sides);
 	
 	int perimeter = sides[0] + sides[0] + sides[1] + sides[1];
 	
