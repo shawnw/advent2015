@@ -1,9 +1,14 @@
 // Takes one argument, the length of the leading 0s needed in the md5 hash.
 
+// For best results, compile like so:
+// g++ -o day04 -std=c++11 -O3 -march=native -flto day04.cc md5.cc
+
+// Also supports OpenMP, but it actually runs faster without. Too much time
+// spent in synchronization?
+
 #include <iostream>
 #include <string>
-#include <chrono>
-#include <ratio>
+#include <cstdlib>
 #include "md5.h"
 
 class compare_hash {
@@ -14,6 +19,9 @@ class compare_hash {
 		bool matches(const std::string &hash) const {
 			return hash.compare(0, prefix.length(), prefix) == 0;
 		}
+		bool matches(const char *hash) const {
+			return prefix.compare(0, prefix.length(), hash, prefix.length()) == 0;
+		}
 };
 
 std::string make_secret_key(const std::string &seed, int n) {
@@ -21,33 +29,29 @@ std::string make_secret_key(const std::string &seed, int n) {
 }
 
 int main(int argc, char **argv) {
-	std::string seed;
-	int magic;
-	
+
 	if (argc != 2) {
 		std::cerr << "Missing prefix length argument.\n";
 		return 1;
 	}
 	
-	compare_hash test(std::stoi(argv[1]));
+	compare_hash test{std::stoi(argv[1])};
 	
 	//std::getline(std::cin, seed);
-	seed = "iwrupvqb";
+	std::string seed{"iwrupvqb"};
 	
-	using namespace std::chrono;
-	steady_clock::time_point t1 = steady_clock::now();
-	for (magic = 1; true; magic += 1) {
-		const std::string key = make_secret_key(seed, magic);
-		const std::string hashed_key = md5(key);
+	#pragma omp parallel for ordered
+	for (int magic = 1; magic < INT_MAX; magic += 1) {
+		const auto key = make_secret_key(seed, magic);
+		const auto hashed_key = md5_cstr(key);
+		#pragma omp ordered
 		if (test.matches(hashed_key)) {
-			std::cout << '\n' << magic << '\n';
-			break;
+			std::cout << magic << '\n';
+			//break;
+			std::exit(0);
 		} 
 	}
-	steady_clock::time_point t2 = steady_clock::now();
-	
-	seconds time_span = duration_cast<seconds>(t2 - t1);
-	std::cout << "Ran in " << time_span.count() << " seconds.\n";
+
 	return 0;
 }
 	
