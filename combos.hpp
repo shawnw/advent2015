@@ -54,7 +54,7 @@ void combinations<N>::gencombos(std::vector<N> items, int r, result_type &result
 
 template<typename N>
 auto combinations<N>::combos(int r) -> result_type {
-	if (r < 0 || r > items.size())
+	if (r < 0 || r > static_cast<int>(items.size()))
 		throw std::out_of_range{"combo"};
 	result_type combo;
 	gencombos(items, r, combo);
